@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wochentagsrechner</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(180deg, #eef2f3, #cfd9df);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: white;
+      padding: 25px 35px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      text-align: center;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      width: 180px;
+      font-size: 16px;
+      margin-top: 10px;
+      text-align: center;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>📅 Wochentagsrechner</h2>
+    <p>Gib ein Datum ein (Format: <strong>dd.mm.yyyy</strong>)</p>
+    <input type="text" id="dateInput" placeholder="z. B. 07.10.2025">
+    <br>
+    <button onclick="calculateWeekday()">Berechnen</button>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    function isLeapYear(y) {
+      return (y % 4 === 0 && y % 100 !== 0) || (y % 400 === 0);
+    }
+
+    function calculateWeekday() {
+      const input = document.getElementById('dateInput').value.trim();
+      const result = document.getElementById('result');
+
+      // Prüfen auf korrektes Format
+      const regex = /^(\d{2})\.(\d{2})\.(\d{4})$/;
+      const match = input.match(regex);
+      if (!match) {
+        result.textContent = "❌ Bitte Datum im Format dd.mm.yyyy eingeben.";
+        result.style.color = "red";
+        return;
+      }
+
+      const day = parseInt(match[1]);
+      const month = parseInt(match[2]);
+      const year = parseInt(match[3]);
+
+      const monthValues = [6, 2, 3, 6, 1, 4, 6, 2, 5, 0, 3, 5];
+
+      let monthVal = monthValues[month - 1];
+      if (isLeapYear(year) && (month === 1 || month === 2)) {
+        monthVal -= 1;
+      }
+
+      const weekdays = ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+
+      let yearDiff = year - 2000;
+      let leapCount = 0;
+
+      if (yearDiff >= 0) {
+        for (let y = 2000; y < year; y++) {
+          if (isLeapYear(y)) leapCount++;
+        }
+      } else {
+        for (let y = year; y < 2000; y++) {
+          if (isLeapYear(y)) leapCount--;
+        }
+      }
+
+      const changeVal = (yearDiff + leapCount) % 7;
+      const weekdayIndex = (day + (monthVal + changeVal) % 7) % 7;
+      const weekday = weekdays[weekdayIndex];
+
+      if (year >= 2000) {
+        result.textContent = `📆 Dein Datum wird ein ${weekday}.`;
+      } else {
+        result.textContent = `📆 Dein Datum war ein ${weekday}.`;
+      }
+      result.style.color = "#333";
+    }
+  </script>
+
+</body>
+</html>
